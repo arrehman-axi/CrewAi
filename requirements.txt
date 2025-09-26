@@ -1,0 +1,3 @@
+crewai>=0.28.8
+litellm>=1.44.0   # make sure it's explicitly included
+python-dotenv>=1.0.0
