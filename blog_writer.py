@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 """
 Simple CrewAI script with a Writer agent that creates blog posts about AI.
-Uses Google Gemini API via Google AI Studio (not Vertex AI).
+Uses Google Gemini API via Google AI Studio.
 """
 
 import os
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
-from langchain_google_genai import ChatGoogleGenerativeAI
+from crewai.llm import LLM
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Create LangChain LLM instance for Gemini (Google AI Studio)
-# This bypasses LiteLLM's routing issues
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=os.getenv("GEMINI_API_KEY"),
+# Create LLM instance for Gemini using the correct model name
+llm = LLM(
+    model="gemini/gemini-2.0-flash",  # Using available model
+    api_key=os.getenv("GEMINI_API_KEY"),
     temperature=0.7
 )
 
