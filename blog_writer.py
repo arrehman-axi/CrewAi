@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 """
-CrewAI script with a Writer agent that creates blog posts about AI.
-Uses Google Gemini via AI Studio API key (not Vertex).
+Simple CrewAI script with a Writer agent that creates blog posts about AI.
+Uses Google Gemini API via Google AI Studio (not Vertex AI).
 """
 
-from crewai import Agent, Task, Crew, Process, LLM
+import os
+from dotenv import load_dotenv
+from crewai import Agent, Task, Crew, Process
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-# 🔑 Hardcode Gemini API Key
+# Load environment variables from .env file
+load_dotenv()
 
-
-# ✅ Use AI Studio provider in litellm
-llm = LLM(
-    model="gemini/gemini-1.5-pro",
-    api_key=GEMINI_API_KEY,
+# Create LangChain LLM instance for Gemini (Google AI Studio)
+# This bypasses LiteLLM's routing issues
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    google_api_key=os.getenv("GEMINI_API_KEY"),
     temperature=0.7
 )
 
-
-# Writer Agent
+# Define the Writer agent
 writer_agent = Agent(
     role="Writer",
     goal="Write a short blog post about AI",
@@ -27,24 +30,31 @@ writer_agent = Agent(
     llm=llm
 )
 
-# Task
+# Define the task
 blog_task = Task(
     description="Write a 3-sentence blogpost about AI in education",
     agent=writer_agent,
     expected_output="A concise 3-sentence blog post about AI in education"
 )
 
-# Crew
+# Create the crew
 crew = Crew(
     agents=[writer_agent],
     tasks=[blog_task],
     process=Process.sequential,
     verbose=True,
-    memory=False
+    memory=False  # Disable memory to prevent additional API calls
 )
 
+# Run the crew
 if __name__ == "__main__":
-    print("🚀 Starting CrewAI blog writer with Gemini (AI Studio)...")
+    print("🚀 Starting CrewAI blog writer with Gemini (Google AI Studio)...")
+    print("=" * 60)
+    
+    # Execute the crew
     result = crew.kickoff()
+    
+    print("=" * 60)
     print("📝 BLOG POST OUTPUT:")
+    print("=" * 60)
     print(result)
